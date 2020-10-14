@@ -15,16 +15,32 @@ spec:
         app: top-secret
     spec:
       containers:
-      - name: main
+      - name: nginx
         image: nginx:alpine
         ports:
         - containerPort: 80
         volumeMounts:
-        - name: secret-files
-          mountPath: "/usr/share/nginx/html"
+        - name: decoded
+          mountPath: '/usr/share/nginx/html'
           readOnly: true
+      initContainers:
+      - name: base64-decode
+        image: alpine
+        volumeMounts:
+        - name: secret
+          mountPath: '/secret'
+          readOnly: true
+        - name: decoded
+          mountPath: '/decoded'
+        command: ["sh", "-c"]
+        args:
+        - cp /secret/index.html /decoded/index.html;
+          base64 -d < /secret/message.txt.base64 > /decoded/message.txt;
+          base64 -d < /secret/image.png.base64 > /decoded/image.png;
       volumes:
-        - name: secret-files
+        - name: secret
           secret:
             secretName: top-secret
             defaultMode: 0444
+        - name: decoded
+          emptyDir: {}
