@@ -16,8 +16,15 @@ spec:
     spec:
       containers:
       - name: main
-        image: alpine
-        command:
-          - sh
-          - -c
-          - 'cat /etc/fstab && sleep infinity'
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: secret-files
+          mountPath: "/usr/share/nginx/html"
+          readOnly: true
+      volumes:
+        - name: secret-files
+          secret:
+            secretName: top-secret
+            defaultMode: 0444
