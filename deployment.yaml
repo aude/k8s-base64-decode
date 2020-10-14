@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: top-secret
+  labels:
+    app: top-secret
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: top-secret
+  template:
+    metadata:
+      labels:
+        app: top-secret
+    spec:
+      containers:
+      - name: main
+        image: alpine
+        command:
+          - sh
+          - -c
+          - 'cat /etc/fstab && sleep infinity'
